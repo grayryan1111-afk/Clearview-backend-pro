@@ -1,40 +1,31 @@
 import express from "express";
 const router = express.Router();
 
-// TEMP AI logic (works without Vision)
-// Returns a rough window + house type estimate
-router.post("/", async (req, res) => {
-  try {
-    const { address } = req.body;
+router.post("/", (req, res) => {
+  const { address } = req.body;
 
-    if (!address) {
-      return res.status(400).json({ error: "Missing address" });
-    }
-
-    // VERY simple fake AI to make frontend work
-    let data = {
-      houseType: "Detached House",
-      windowCount: 26,
-    };
-
-    const a = address.toLowerCase();
-
-    if (a.includes("apt") || a.includes("#") || a.includes("unit")) {
-      data.houseType = "Apartment";
-      data.windowCount = 10;
-    }
-
-    if (a.includes("town") || a.includes("complex")) {
-      data.houseType = "Townhouse";
-      data.windowCount = 18;
-    }
-
-    return res.json(data);
-
-  } catch (err) {
-    console.error("AI ERROR:", err);
-    res.status(500).json({ error: "AI processing failed" });
+  if (!address) {
+    return res.status(400).json({ error: "Missing address" });
   }
+
+  const addr = address.toLowerCase();
+
+  // SIMPLE fake AI that always returns stable values
+  let houseType = "Detached House";
+  let windows = 26;
+
+  if (addr.includes("apt") || addr.includes("unit") || addr.includes("#")) {
+    houseType = "Apartment";
+    windows = 10;
+  } else if (addr.includes("town") || addr.includes("complex")) {
+    houseType = "Townhouse";
+    windows = 18;
+  }
+
+  res.json({
+    houseType,
+    windowCount: windows,
+  });
 });
 
 export default router;
